@@ -1,0 +1,96 @@
+;Name-Shaikh Arshan Anil
+;Roll No-2231
+section .data
+
+msg1 db "Enter the String :- ",10
+msg1len equ $ - msg1
+msg2 db 10,13,"No is: "
+msg2len equ $ - msg2
+lno db 0
+section .bss
+no resb 20
+mystring resb 50
+strlen resb 1
+
+%macro sys_read 2
+	mov rax,0
+	mov rdi,0
+	mov rsi,%1
+	mov rdx,%2
+	syscall
+
+%endmacro
+
+%macro sys_write 2
+	mov rax,1
+	mov rdi,1
+	mov rsi,%1
+	mov rdx,%2
+	syscall
+%endmacro
+%macro sys_exit 0
+	mov rax,60
+	mov rdi,0
+	syscall
+%endmacro
+global _start
+
+section .text
+_start:
+
+	sys_write msg1,msg1len
+	sys_read mystring,50
+	mov r8,mystring
+	mov rbx,0
+up1:
+	mov al,[r8]
+	cmp al,10
+	je next1
+	inc rbx
+	inc r8
+	jmp up1
+next1:
+	sys_write msg1,msg1len
+	call disp_p
+	
+sys_exit
+
+disp_p:
+	mov cl,16
+	mov rsi,no
+u1:
+	rol rbx,0x04
+	mov al,bl
+	and al,0x0f
+	cmp al,9
+	jle c1
+	add al,7
+c1:
+	add al,0x30
+	mov [rsi],al
+	inc rsi
+	dec cl
+	jnz u1
+	sys_write no,17
+	ret
+
+accept_p:
+	
+	sys_read no,16
+	mov cl,al
+	dec cl
+	mov rbx,0
+	mov rsi,no
+u2:	
+	mov al,[rsi]
+	shl rbx,04
+	cmp al,'9'
+	jle c2
+	sub al,7
+c2:
+	sub al,0x30
+	add bl,al
+	inc rsi
+	dec cl
+	jnz u2	
+	ret
